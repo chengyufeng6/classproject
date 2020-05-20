@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pause.ico</file>
+        <file>play.ico</file>
+        <file>indexcycle.png</file>
+        <file>random.png</file>
+        <file>singlecycle.png</file>
+        <file>music.ico</file>
+        <file>last.png</file>
+        <file>maxvolume.png</file>
+        <file>minvolume.png</file>
+        <file>next.png</file>
+        <file>volume.png</file>
+    </qresource>
+</RCC>

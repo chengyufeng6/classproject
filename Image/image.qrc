@@ -11,5 +11,8 @@
         <file>minvolume.png</file>
         <file>next.png</file>
         <file>volume.png</file>
+        <file>slide.png</file>
+        <file>slide1.jpg</file>
+        <file>lyric.png</file>
     </qresource>
 </RCC>

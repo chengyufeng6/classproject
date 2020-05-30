@@ -80,19 +80,6 @@
     <string>扫描本地歌曲</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>720</x>
-     <y>20</y>
-     <width>81</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600; color:#00007f;&quot;&gt;本地歌曲&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="LastButton">
    <property name="geometry">
     <rect>
@@ -110,9 +97,9 @@
    <property name="geometry">
     <rect>
      <x>720</x>
-     <y>60</y>
+     <y>20</y>
      <width>256</width>
-     <height>531</height>
+     <height>571</height>
     </rect>
    </property>
    <attribute name="horizontalHeaderStretchLastSection">
@@ -214,10 +201,48 @@ p, li { white-space: pre-wrap; }
     <string/>
    </property>
   </widget>
-  <zorder>PlayButton</zorder>
-  <zorder>NextButton</zorder>
+  <widget class="QPushButton" name="LycButton">
+   <property name="geometry">
+    <rect>
+     <x>710</x>
+     <y>610</y>
+     <width>35</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>35</width>
+     <height>35</height>
+    </size>
+   </property>
+   <property name="cursor">
+    <cursorShape>PointingHandCursor</cursorShape>
+   </property>
+   <property name="toolTip">
+    <string>进入歌词界面</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset>
+     <normaloff>:/image/image/image/lyric.png</normaloff>:/image/image/image/lyric.png</iconset>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+   <property name="flat">
+    <bool>true</bool>
+   </property>
+  </widget>
   <zorder>ScanMusicButton</zorder>
-  <zorder>label</zorder>
   <zorder>LastButton</zorder>
   <zorder>MusicList</zorder>
   <zorder>songlabel</zorder>
@@ -227,9 +252,9 @@ p, li { white-space: pre-wrap; }
   <zorder>volumeValue</zorder>
   <zorder>VolumeButton</zorder>
   <zorder>timelabel</zorder>
-  <zorder>timelabel</zorder>
-  <zorder></zorder>
-  <zorder></zorder>
+  <zorder>PlayButton</zorder>
+  <zorder>NextButton</zorder>
+  <zorder>LycButton</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

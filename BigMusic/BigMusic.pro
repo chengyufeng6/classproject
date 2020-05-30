@@ -25,13 +25,16 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
         main.cpp \
-        mywidget.cpp
+        mywidget.cpp \
+    lyricwidget.cpp
 
 HEADERS += \
-        mywidget.h
+        mywidget.h \
+    lyricwidget.h
 
 FORMS += \
-        mywidget.ui
+        mywidget.ui \
+    lyricwidget.ui
 
 RESOURCES += \
     ../Image/image.qrc

@@ -6,6 +6,8 @@
 #include<QStandardPaths>//文件路径
 #include<QFileDialog>//调用本地添加文件窗口
 #include<QFileInfo>//文件信息
+#include<QScrollBar>//滚动条
+#include"lyricwidget.h"
 MyWidget::MyWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::MyWidget)
@@ -29,6 +31,33 @@ MyWidget::MyWidget(QWidget *parent) :
     ui->timelabel->setStyleSheet("color:rgb(200,250,10)");//时间进度标签颜色
     ui->LastButton->setIcon(QIcon(":/last.png"));//上一曲icon
     ui->NextButton->setIcon(QIcon(":/next.png"));//下一曲icon
+    ui->LycButton->setIcon(QIcon(":/lyric.png"));//歌词icon
+    //设置进度条滑块样式
+    ui->SliderDuration->setStyleSheet("  \
+         QSlider::add-page:Horizontal\
+         {     \
+            background-color: rgb(87, 97, 106);\
+            height:4px;\
+         }\
+         QSlider::sub-page:Horizontal \
+        {\
+            background-color:qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(231,80,229, 255), stop:1 rgba(7,208,255, 255));\
+            height:4px;\
+         }\
+        QSlider::groove:Horizontal \
+        {\
+            background:transparent;\
+            height:6px;\
+        }\
+        QSlider::handle:Horizontal \
+        {\
+            height: 30px;\
+            width:8px;\
+            border-image: url(:/slide.png);\
+            margin: -8 0px; \
+        }\
+        ");
+
     init_connect();
 }
 
@@ -50,6 +79,13 @@ inline void MyWidget::init_connect()//初始信号与槽 设为inline效率更�
     connect(ui->VolumeSlider,&QSlider::valueChanged,this,&MyWidget::on_volumeValue_linkActivated);//实时音量数字显示
     connect(Player,&QMediaPlayer::positionChanged,this,&MyWidget::updatePosition);//播放的位置改变->更新进度条播放位置
     connect(ui->SliderDuration,&QSlider::sliderMoved,Player,&QMediaPlayer::setPosition);//进度条移动->更新音乐的播放位置
+
+    connect(ui->LycButton,&QPushButton::clicked,this,&MyWidget::on_LycButton_cliked);//显示歌词
+
+    connect(Player,&QMediaPlayer::positionChanged,this,&MyWidget::updateSongLrc);//随时间变化歌词
+
+    connect(PlayList,&QMediaPlaylist::currentMediaChanged,this,&MyWidget::updateSongLyclist);//歌曲变化就查找和提取歌词
+    connect(Player,&QMediaPlayer::stateChanged,this,&MyWidget::updateSongLyclist);//第一首歌播放时候没有更新歌词，笨办法就是改变状态就更新
 }
 
 void MyWidget::paintEvent(QPaintEvent *)//会自动调用
@@ -94,12 +130,24 @@ void MyWidget::init()//初始化函数接口
      ui->MusicList->setColumnCount(1);//设置1列
      ui->MusicList->setHorizontalHeaderLabels(header);
      int count=ui->MusicList->rowCount();//默认行数为0
-    ui->MusicList->setRowCount(count+1);//调整表格的行数
+        ui->MusicList->setRowCount(count+1);//调整表格的行数
      QTableWidgetItem *itemName=new QTableWidgetItem(name);
-     itemName->setBackgroundColor(QColor(20,0,60));//设置背景颜色
-     itemName->setTextColor(QColor(200,111,100));//设置文本颜色
+     //itemName->setBackgroundColor(QColor(20,80,60));//设置背景颜色
+     itemName->setTextColor(QColor(192,192,192));//设置文本颜色
      itemName->setFont(QFont("Helvetica"));//设置字体
      ui->MusicList->setItem(count,0,itemName);
+
+     ui->MusicList->verticalHeader()->setVisible(false);//设置垂直列头不可见
+     //ui->MusicList->setFrameShape(QFrame::NoFrame); //设置无边框
+     ui->MusicList->setShowGrid(false); //设置不显示格子线
+
+     ui->MusicList->setStyleSheet("background-color:rgba(0,0,0,0)");//整个表格透明 或者直接设置background-color:transparent;  transparent为透明的  表头和滚动条这些子控件无法全部实现透明，需要下面代码实现
+     ui->MusicList->horizontalHeader()->setStyleSheet("QHeaderView::section{background-color:transparent;font:18pt '宋体';color:DeepSkyBlue;}");  //行表头
+     ui->MusicList->horizontalHeaderItem(0)->setTextAlignment(Qt::AlignLeft);
+     ui->MusicList->verticalScrollBar()->setStyleSheet(listWidgetStyle);//设置滚动条样式表
+     //QPalette pll = ui->MusicList->palette();//另一种设置表格透明方法
+    // pll.setBrush(QPalette::Base,QBrush(QColor(255,255,255,0)));
+     //ui->MusicList->setPalette(pll);
  }
 
  void MyWidget::on_PlayButton_clicked()//播放 &&暂停
@@ -209,7 +257,7 @@ void MyWidget::on_VolumeButton_cliked()//点击显示音量条和值，设置ico
      //qDebug()<<"位置"<<ui->VolumeSlider->value();
  }
 
-void MyWidget::on_ScanMusicButton_clicked()
+void MyWidget::on_ScanMusicButton_clicked()//从本地添加音乐进入列表
 {
     QStringList musicPaths = QStandardPaths::standardLocations(QStandardPaths::MusicLocation);
     QString filePath =QFileDialog::getOpenFileName(this, tr("Open File"),
@@ -259,6 +307,40 @@ void MyWidget::updatePosition(qint64 position)//播放的位置改变->更新进
     ui->SliderDuration->setRange(0,Player->duration());//设置进度条长度范围
     ui->SliderDuration->setValue(position);//设置进度条位置同position
     ui->timelabel->setText(Time(position)+"/"+Time(Player->duration()));//更新时间标签
+}
+
+
+
+
+
+void MyWidget::on_LycButton_cliked()//显示歌词
+{
+
+    if(Lyric->isHidden())//如果隐藏的话就show，否则就hide
+    {
+        Lyric->show();
+     }
+    else
+    {
+        Lyric->hide();
+    }
+
+}
+
+void MyWidget::updateSongLrc(qint64 position)//随时间变化而变化显示歌词
+{
+    Lyric->showcontent(position);//更新歌词位置
+}
+
+void MyWidget::updateSongLyclist()
+{
+    int index=PlayList->currentIndex();//获取当前位置
+    QString songname_daihouzui=fileList.at(index);//提取在当前位置的文件名
+    QStringList songnamelist = songname_daihouzui.split(".");//QString字符串分割函数
+    QString songname=songnamelist[0];
+   // qDebug()<<"歌词歌曲名："<<songname;
+    QString lycpath=MusicPath+"\\" +songname+".lrc";
+    Lyric->process(lycpath);
 }
 
 MyWidget::~MyWidget()
